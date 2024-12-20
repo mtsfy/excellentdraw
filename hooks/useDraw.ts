@@ -4,18 +4,39 @@ import { useEffect, useRef, useState } from "react";
 export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void) => {
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [color, setColor] = useState("black");
+  const [isDrawing, setIsDrawing] = useState(true);
+  const [isErasing, setIsErasing] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const prevPoint = useRef<Point | null>(null);
 
   const onMouseDown = () => setIsMouseDown(true);
 
+  const onErase = ({ prevPoint, currentPoint, ctx }: Draw) => {
+    const { x: cx, y: cy } = currentPoint;
+    const lineWidth = 50;
+    const start = prevPoint ?? currentPoint;
+
+    ctx.save();
+
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.moveTo(start.x, start.y);
+    ctx.lineTo(cx, cy);
+    ctx.stroke();
+
+    ctx.restore();
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     canvas.width = window.innerWidth - 100;
-    canvas.height = window.innerHeight - 100;
+    canvas.height = window.innerHeight - 200;
   }, []);
 
   useEffect(() => {
@@ -40,7 +61,12 @@ export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void
 
       if (!ctx || !currentPoint) return;
 
-      onDraw({ currentPoint: currentPoint, prevPoint: prevPoint.current, ctx: ctx });
+      if (isDrawing) {
+        onDraw({ currentPoint: currentPoint, prevPoint: prevPoint.current, ctx: ctx });
+      } else {
+        onErase({ currentPoint: currentPoint, prevPoint: prevPoint.current, ctx: ctx });
+      }
+
       prevPoint.current = currentPoint;
     };
 
@@ -61,5 +87,9 @@ export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void
   return {
     canvasRef,
     onMouseDown,
+    isDrawing,
+    setIsDrawing,
+    isErasing,
+    setIsErasing,
   };
 };
