@@ -15,7 +15,7 @@ interface DrawingContextInterface {
 export const defaultState: DrawingContextInterface = {
   tool: "pencil" as DrawingTool,
   setTool: () => {},
-  strokeColor: "black",
+  strokeColor: "#000",
   setStrokeColor: () => {},
   strokeWidth: 4,
   setStrokeWidth: () => {},

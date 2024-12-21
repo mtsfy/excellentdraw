@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { DrawingContext } from "@/context/drawing-context";
+import { useContext, useEffect, useRef, useState } from "react";
 
 const DEFAULT_WIDTH = 800;
 const DEFAULT_HEIGHT = 600;
 
 export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void) => {
   const [isMouseDown, setIsMouseDown] = useState(false);
-  const [isDrawing, setIsDrawing] = useState(true);
-  const [isErasing, setIsErasing] = useState(false);
+  const { tool } = useContext(DrawingContext);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const prevPoint = useRef<Point | null>(null);
@@ -43,9 +43,9 @@ export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void
 
       if (!ctx || !currentPoint) return;
 
-      if (isDrawing) {
+      if (tool == "pencil") {
         onDraw({ currentPoint: currentPoint, prevPoint: prevPoint.current, ctx: ctx });
-      } else {
+      } else if (tool == "eraser") {
         onErase({ currentPoint: currentPoint, prevPoint: prevPoint.current, ctx: ctx });
       }
 
@@ -87,9 +87,5 @@ export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void
   return {
     canvasRef,
     onMouseDown,
-    isDrawing,
-    setIsDrawing,
-    isErasing,
-    setIsErasing,
   };
 };
