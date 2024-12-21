@@ -1,9 +1,10 @@
-import { log } from "console";
 import { useEffect, useRef, useState } from "react";
+
+const DEFAULT_WIDTH = 800;
+const DEFAULT_HEIGHT = 600;
 
 export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void) => {
   const [isMouseDown, setIsMouseDown] = useState(false);
-  const [color, setColor] = useState("black");
   const [isDrawing, setIsDrawing] = useState(true);
   const [isErasing, setIsErasing] = useState(false);
 
@@ -12,31 +13,12 @@ export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void
 
   const onMouseDown = () => setIsMouseDown(true);
 
-  const onErase = ({ prevPoint, currentPoint, ctx }: Draw) => {
-    const { x: cx, y: cy } = currentPoint;
-    const lineWidth = 50;
-    const start = prevPoint ?? currentPoint;
-
-    ctx.save();
-
-    ctx.globalCompositeOperation = "destination-out";
-    ctx.beginPath();
-    ctx.lineWidth = lineWidth;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.moveTo(start.x, start.y);
-    ctx.lineTo(cx, cy);
-    ctx.stroke();
-
-    ctx.restore();
-  };
-
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || typeof window === "undefined") return;
 
-    canvas.width = window.innerWidth - 100;
-    canvas.height = window.innerHeight - 200;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
   }, []);
 
   useEffect(() => {
@@ -84,6 +66,24 @@ export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void
     };
   }, [onDraw]);
 
+  const onErase = ({ prevPoint, currentPoint, ctx }: Draw) => {
+    const { x: cx, y: cy } = currentPoint;
+    const lineWidth = 50;
+    const start = prevPoint ?? currentPoint;
+
+    ctx.save();
+
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.moveTo(start.x, start.y);
+    ctx.lineTo(cx, cy);
+    ctx.stroke();
+
+    ctx.restore();
+  };
   return {
     canvasRef,
     onMouseDown,

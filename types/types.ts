@@ -8,3 +8,5 @@ type Point = {
   x: number;
   y: number;
 };
+
+type DrawingTool = "pencil" | "brush" | "eraser";
