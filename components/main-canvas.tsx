@@ -1,6 +1,5 @@
 "use client";
 import { useDraw } from "@/hooks/useDraw";
-import { LuEraser, LuPencil } from "react-icons/lu";
 import CustomizationPanel from "./customization-panel";
 import { useContext } from "react";
 import { DrawingContext } from "@/context/drawing-context";
