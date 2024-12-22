@@ -1,29 +1,60 @@
 "use client";
 
 import { DrawingContext } from "@/context/drawing-context";
-import { useContext } from "react";
-import { LuEraser, LuPencil } from "react-icons/lu";
+import { useContext, useEffect } from "react";
+import { IconType } from "react-icons";
+import { LuEraser, LuMousePointer2, LuPencil } from "react-icons/lu";
 
 const ToolSelector = () => {
-  const { tool, setTool } = useContext(DrawingContext);
+  const { tool: activeTool, setTool } = useContext(DrawingContext);
+  const tools = [
+    {
+      label: "pointer" as DrawingTool,
+      code: 1,
+      icon: LuMousePointer2 as IconType,
+    },
+    {
+      label: "pencil" as DrawingTool,
+      code: 2,
+      icon: LuPencil as IconType,
+    },
+    {
+      label: "eraser" as DrawingTool,
+      code: 3,
+      icon: LuEraser as IconType,
+    },
+  ];
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const key = e.key;
+      if (key === "1") setTool("pointer");
+      if (key === "2") setTool("pencil");
+      if (key === "3") setTool("eraser");
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [setTool]);
+
   return (
     <div className="flex gap-2 mb-4 border-[1px] shadow-md p-[10px] rounded-xl xl:w-1/3 w-full justify-center fixed bg-white top-5">
-      <button
-        onClick={() => setTool("pencil")}
-        className={`px-2 py-2 rounded hover:border-[1px] border-[1px] ${
-          tool == "pencil" ? " text-black bg-violet-200" : " border-transparent text-black"
-        }`}
-      >
-        <LuPencil size={15} />
-      </button>
-      <button
-        onClick={() => setTool("eraser")}
-        className={`px-2 py-2 rounded hover:border-[1px] border-[1px] ${
-          tool == "eraser" ? " text-black bg-violet-200" : " border-transparent text-black"
-        }`}
-      >
-        <LuEraser size={15} />
-      </button>
+      {tools.map((tool, idx) => (
+        <button
+          key={idx}
+          onClick={() => setTool(tool.label)}
+          className={`relative px-3 py-3 rounded-lg hover:border-[1px] border-[1px] ${
+            activeTool == tool.label ? " text-neutral-800 bg-violet-200" : " border-transparent text-black"
+          }`}
+        >
+          <tool.icon size={17} />
+          <div
+            className={`text-[10px] absolute bottom-[1px]  right-1 ${activeTool == tool.label ? "text-neutral-800" : "text-neutral-400"} font-medium`}
+          >
+            {tool.code}
+          </div>
+        </button>
+      ))}
     </div>
   );
 };

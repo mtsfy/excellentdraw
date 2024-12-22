@@ -9,4 +9,4 @@ type Point = {
   y: number;
 };
 
-type DrawingTool = "pencil" | "brush" | "eraser";
+type DrawingTool = "pencil" | "eraser" | "pointer";

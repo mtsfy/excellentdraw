@@ -10,8 +10,6 @@ const Cursor = () => {
 
   useEffect(() => {
     const mouseMove = (e: MouseEvent) => {
-      console.log(e.clientX, e.clientY);
-
       setCurrentPoint({
         x: e.clientX,
         y: e.clientY,
