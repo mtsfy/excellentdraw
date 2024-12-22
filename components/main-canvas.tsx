@@ -42,7 +42,7 @@ const MainCanvas = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen w-screen p-4 overflow-hidden text-black">
       <ToolSelector />
-      {tool == "pencil" && <CustomizationPanel />}
+      {(tool == "pencil" || tool == "rectangle") && <CustomizationPanel />}
       <div className="flex-1 flex items-center justify-center">
         <canvas ref={canvasRef} onMouseDown={(e) => onMouseDown(e.nativeEvent)} className="border-2" style={{ cursor: "none" }} />
       </div>
