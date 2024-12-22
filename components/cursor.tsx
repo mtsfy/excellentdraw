@@ -23,34 +23,21 @@ const Cursor = () => {
     };
   }, []);
 
+  if (tool != "eraser") return null;
+
   const variants = {
     default: {
       x: currentPoint.x - 12,
       y: currentPoint.y - 12,
     },
   };
-  if (tool == "eraser") {
-    return (
-      <motion.div
-        className="h-6 w-6 border-black border-[1px] bg-white rounded-full fixed top-0 left-0 pointer-events-none"
-        variants={variants}
-        animate={"default"}
-        transition={{ duration: 0, ease: "linear" }}
-      />
-    );
-  }
   return (
     <motion.div
-      className="h-6 w-6 fixed top-0 left-0 pointer-events-none"
+      className="h-6 w-6 border-black border-[1px] bg-white rounded-full fixed top-0 left-0 pointer-events-none"
       variants={variants}
       animate={"default"}
       transition={{ duration: 0, ease: "linear" }}
-    >
-      <div className="absolute left-1/2 top-0 w-[1px] h-[30%] bg-black shadow-[0_0_0_2px_#fff] rounded-lg -translate-x-[0.5px]" />
-      <div className="absolute left-1/2 bottom-0 w-[1px] h-[30%] bg-black shadow-[0_0_0_2px_#fff] rounded-lg -translate-x-[0.5px]" />
-      <div className="absolute top-1/2 left-0 h-[1px] w-[30%] bg-black shadow-[0_0_0_2px_#fff] rounded-lg -translate-y-[0.5px]" />
-      <div className="absolute top-1/2 right-0 h-[1px] w-[30%] bg-black shadow-[0_0_0_2px_#fff] rounded-lg -translate-y-[0.5px]" />
-    </motion.div>
+    />
   );
 };
 

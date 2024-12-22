@@ -69,6 +69,13 @@ export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void
         onErase({ currentPoint, prevPoint: prevPoint.current, ctx });
       } else if (tool === "rectangle") {
         onRectangle({ currentPoint, ctx });
+      } else if (tool == "circle") {
+        if (!startPoint) return;
+
+        const distance = Math.sqrt(Math.pow(currentPoint.x - startPoint.x, 2) + Math.pow(currentPoint.y - startPoint.y, 2));
+        if (distance < 20) return;
+
+        onCircle({ currentPoint, ctx });
       }
 
       prevPoint.current = currentPoint;
@@ -76,6 +83,10 @@ export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void
 
     const handleMouseUp = () => {
       if (tool === "rectangle" && canvas && offscreenCanvas) {
+        const offscreenCtx = offscreenCanvas.getContext("2d");
+        offscreenCtx?.drawImage(canvas, 0, 0);
+      }
+      if (tool == "circle" && canvas && offscreenCanvas) {
         const offscreenCtx = offscreenCanvas.getContext("2d");
         offscreenCtx?.drawImage(canvas, 0, 0);
       }
@@ -136,6 +147,27 @@ export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void
     ctx.strokeRect(startPoint.x, startPoint.y, width, height);
   };
 
+  const onCircle = ({ currentPoint, ctx }: { currentPoint: Point; ctx: CanvasRenderingContext2D }) => {
+    if (!startPoint || !offscreenCanvasRef.current) return;
+
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.drawImage(offscreenCanvasRef.current, 0, 0);
+
+    const offset = 20; // Adjust this value to change offset distance
+    const offsetStartPoint = {
+      x: startPoint.x + offset,
+      y: startPoint.y + offset,
+    };
+
+    const radius = Math.sqrt(Math.pow(currentPoint.x - offsetStartPoint.x, 2) + Math.pow(currentPoint.y - offsetStartPoint.y, 2));
+
+    // Draw circle with offset
+    ctx.beginPath();
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = strokeWidth / 2;
+    ctx.arc(offsetStartPoint.x, offsetStartPoint.y, radius / 2, 0, 2 * Math.PI);
+    ctx.stroke();
+  };
   return {
     canvasRef,
     offscreenCanvasRef,

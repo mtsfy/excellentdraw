@@ -39,12 +39,20 @@ const MainCanvas = () => {
     }
   }
 
+  let pointer = "cursor-crosshair";
+
+  if (tool == "pointer") {
+    pointer = "cursor-default ";
+  } else if (tool == "eraser") {
+    pointer = "cursor-none";
+  }
+
   return (
     <div className="flex flex-col items-center justify-center h-screen w-screen p-4 overflow-hidden text-black">
       <ToolSelector />
-      {(tool == "pencil" || tool == "rectangle") && <CustomizationPanel />}
+      {(tool == "pencil" || tool == "rectangle" || tool == "circle") && <CustomizationPanel />}
       <div className="flex-1 flex items-center justify-center">
-        <canvas ref={canvasRef} onMouseDown={(e) => onMouseDown(e.nativeEvent)} className="border-2" style={{ cursor: "none" }} />
+        <canvas ref={canvasRef} onMouseDown={(e) => onMouseDown(e.nativeEvent)} className={`border-2 cursr ${pointer}`} />
       </div>
     </div>
   );

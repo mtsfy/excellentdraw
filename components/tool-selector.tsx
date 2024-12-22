@@ -3,7 +3,7 @@
 import { DrawingContext } from "@/context/drawing-context";
 import { useContext, useEffect } from "react";
 import { IconType } from "react-icons";
-import { LuEraser, LuMousePointer2, LuPencil, LuSquare } from "react-icons/lu";
+import { LuCircle, LuEraser, LuMousePointer2, LuPencil, LuSquare } from "react-icons/lu";
 
 const ToolSelector = () => {
   const { tool: activeTool, setTool } = useContext(DrawingContext);
@@ -19,8 +19,13 @@ const ToolSelector = () => {
       icon: LuSquare as IconType,
     },
     {
-      label: "pencil" as DrawingTool,
+      label: "circle" as DrawingTool,
       code: 3,
+      icon: LuCircle as IconType,
+    },
+    {
+      label: "pencil" as DrawingTool,
+      code: 4,
       icon: LuPencil as IconType,
     },
     {
@@ -35,7 +40,8 @@ const ToolSelector = () => {
       const key = e.key;
       if (key === "1") setTool("pointer");
       if (key === "2") setTool("rectangle");
-      if (key === "3") setTool("pencil");
+      if (key === "3") setTool("circle");
+      if (key === "4") setTool("pencil");
       if (key === "0") setTool("eraser");
     };
 
