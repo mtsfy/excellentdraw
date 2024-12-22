@@ -3,7 +3,7 @@
 import { DrawingContext } from "@/context/drawing-context";
 import { useContext, useEffect } from "react";
 import { IconType } from "react-icons";
-import { LuEraser, LuMousePointer2, LuPencil } from "react-icons/lu";
+import { LuEraser, LuMousePointer2, LuPencil, LuSquare } from "react-icons/lu";
 
 const ToolSelector = () => {
   const { tool: activeTool, setTool } = useContext(DrawingContext);
@@ -14,13 +14,18 @@ const ToolSelector = () => {
       icon: LuMousePointer2 as IconType,
     },
     {
-      label: "pencil" as DrawingTool,
+      label: "rectangle" as DrawingTool,
       code: 2,
+      icon: LuSquare as IconType,
+    },
+    {
+      label: "pencil" as DrawingTool,
+      code: 3,
       icon: LuPencil as IconType,
     },
     {
       label: "eraser" as DrawingTool,
-      code: 3,
+      code: 0,
       icon: LuEraser as IconType,
     },
   ];
@@ -29,8 +34,9 @@ const ToolSelector = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const key = e.key;
       if (key === "1") setTool("pointer");
-      if (key === "2") setTool("pencil");
-      if (key === "3") setTool("eraser");
+      if (key === "2") setTool("rectangle");
+      if (key === "3") setTool("pencil");
+      if (key === "0") setTool("eraser");
     };
 
     window.addEventListener("keydown", handleKeyDown);

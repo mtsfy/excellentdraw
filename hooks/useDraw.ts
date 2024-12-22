@@ -6,12 +6,35 @@ const DEFAULT_HEIGHT = 600;
 
 export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void) => {
   const [isMouseDown, setIsMouseDown] = useState(false);
-  const { tool } = useContext(DrawingContext);
+  const [startPoint, setStartPoint] = useState<Point | null>(null);
+  const { tool, strokeColor, strokeWidth } = useContext(DrawingContext);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const offscreenCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const prevPoint = useRef<Point | null>(null);
 
-  const onMouseDown = () => setIsMouseDown(true);
+  const onMouseDown = (e: MouseEvent) => {
+    setIsMouseDown(true);
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const rect = canvas.getBoundingClientRect();
+      const point = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      };
+      setStartPoint(point);
+      prevPoint.current = point;
+    }
+  };
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || typeof window === "undefined") return;
+
+    offscreenCanvasRef.current = document.createElement("canvas");
+    offscreenCanvasRef.current.width = window.innerWidth;
+    offscreenCanvasRef.current.height = window.innerHeight;
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -22,16 +45,14 @@ export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void
   }, []);
 
   useEffect(() => {
-    const { current: canvas } = canvasRef;
-    if (!canvas) {
-      return;
-    }
+    const canvas = canvasRef.current;
+    const offscreenCanvas = offscreenCanvasRef.current;
+    if (!canvas || !offscreenCanvas) return;
 
     const computePoints = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-
       return { x, y };
     };
 
@@ -40,21 +61,27 @@ export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void
       const currentPoint = computePoints(e);
 
       const ctx = canvas.getContext("2d");
-
       if (!ctx || !currentPoint) return;
 
-      if (tool == "pencil") {
-        onDraw({ currentPoint: currentPoint, prevPoint: prevPoint.current, ctx: ctx });
-      } else if (tool == "eraser") {
-        onErase({ currentPoint: currentPoint, prevPoint: prevPoint.current, ctx: ctx });
+      if (tool === "pencil") {
+        onDraw({ currentPoint, prevPoint: prevPoint.current, ctx });
+      } else if (tool === "eraser") {
+        onErase({ currentPoint, prevPoint: prevPoint.current, ctx });
+      } else if (tool === "rectangle") {
+        onRectangle({ currentPoint, ctx });
       }
 
       prevPoint.current = currentPoint;
     };
 
     const handleMouseUp = () => {
+      if (tool === "rectangle" && canvas && offscreenCanvas) {
+        const offscreenCtx = offscreenCanvas.getContext("2d");
+        offscreenCtx?.drawImage(canvas, 0, 0);
+      }
       setIsMouseDown(false);
       prevPoint.current = null;
+      setStartPoint(null);
     };
 
     canvas.addEventListener("mousemove", handleMouseMove);
@@ -64,15 +91,19 @@ export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void
       canvas.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [onDraw]);
+  }, [onDraw, tool, isMouseDown]);
 
   const onErase = ({ prevPoint, currentPoint, ctx }: Draw) => {
     const { x: cx, y: cy } = currentPoint;
     const lineWidth = 24;
     const start = prevPoint ?? currentPoint;
 
-    ctx.save();
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    if (offscreenCanvasRef.current) {
+      ctx.drawImage(offscreenCanvasRef.current, 0, 0);
+    }
 
+    ctx.save();
     ctx.globalCompositeOperation = "destination-out";
     ctx.beginPath();
     ctx.lineWidth = lineWidth;
@@ -81,11 +112,33 @@ export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void
     ctx.moveTo(start.x, start.y);
     ctx.lineTo(cx, cy);
     ctx.stroke();
-
     ctx.restore();
+
+    if (offscreenCanvasRef.current) {
+      const offscreenCtx = offscreenCanvasRef.current.getContext("2d");
+      offscreenCtx?.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      offscreenCtx?.drawImage(ctx.canvas, 0, 0);
+    }
   };
+
+  const onRectangle = ({ currentPoint, ctx }: { currentPoint: Point; ctx: CanvasRenderingContext2D }) => {
+    if (!startPoint || !offscreenCanvasRef.current) return;
+
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.drawImage(offscreenCanvasRef.current, 0, 0);
+
+    const width = currentPoint.x - startPoint.x;
+    const height = currentPoint.y - startPoint.y;
+
+    ctx.beginPath();
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = strokeWidth;
+    ctx.strokeRect(startPoint.x, startPoint.y, width, height);
+  };
+
   return {
     canvasRef,
+    offscreenCanvasRef,
     onMouseDown,
   };
 };
