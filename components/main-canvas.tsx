@@ -17,13 +17,15 @@ const MainCanvas = () => {
     ctx.beginPath();
     ctx.lineWidth = strokeWidth;
     ctx.strokeStyle = strokeColor;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
     ctx.moveTo(start.x, start.y);
     ctx.lineTo(cx, cy);
     ctx.stroke();
 
     ctx.fillStyle = strokeColor;
     ctx.beginPath();
-    ctx.arc(start.x, start.y, 2, 0, 2 * Math.PI);
+    ctx.arc(start.x, start.y, strokeWidth / 2, 0, 2 * Math.PI);
     ctx.fill();
   }
 

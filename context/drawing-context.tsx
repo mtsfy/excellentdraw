@@ -17,7 +17,7 @@ export const defaultState: DrawingContextInterface = {
   setTool: () => {},
   strokeColor: "#000",
   setStrokeColor: () => {},
-  strokeWidth: 4,
+  strokeWidth: 5,
   setStrokeWidth: () => {},
   strokeOpacity: 100,
   setStrokeOpacity: () => {},

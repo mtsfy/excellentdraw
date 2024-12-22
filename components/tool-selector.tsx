@@ -11,7 +11,7 @@ const ToolSelector = () => {
       <button
         onClick={() => setTool("pencil")}
         className={`px-2 py-2 rounded hover:border-[1px] border-[1px] ${
-          tool == "pencil" ? " text-black bg-neutral-200" : " border-transparent text-black"
+          tool == "pencil" ? " text-black bg-violet-200" : " border-transparent text-black"
         }`}
       >
         <LuPencil size={15} />
@@ -19,7 +19,7 @@ const ToolSelector = () => {
       <button
         onClick={() => setTool("eraser")}
         className={`px-2 py-2 rounded hover:border-[1px] border-[1px] ${
-          tool == "eraser" ? " text-black bg-neutral-200" : " border-transparent text-black"
+          tool == "eraser" ? " text-black bg-violet-200" : " border-transparent text-black"
         }`}
       >
         <LuEraser size={15} />
