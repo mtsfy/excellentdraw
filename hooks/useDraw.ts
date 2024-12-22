@@ -68,7 +68,7 @@ export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void
 
   const onErase = ({ prevPoint, currentPoint, ctx }: Draw) => {
     const { x: cx, y: cy } = currentPoint;
-    const lineWidth = 50;
+    const lineWidth = 24;
     const start = prevPoint ?? currentPoint;
 
     ctx.save();
