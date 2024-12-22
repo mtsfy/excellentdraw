@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} style={{ cursor: "none" }}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <DrawingContextProvider>
           <Cursor />
           {children}

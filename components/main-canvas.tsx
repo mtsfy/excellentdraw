@@ -34,7 +34,7 @@ const MainCanvas = () => {
       <ToolSelector />
       {tool == "pencil" && <CustomizationPanel />}
       <div className="flex-1 flex items-center justify-center">
-        <canvas ref={canvasRef} onMouseDown={onMouseDown} className="border-2" />
+        <canvas ref={canvasRef} onMouseDown={onMouseDown} className="border-2" style={{ cursor: "none" }} />
       </div>
     </div>
   );
