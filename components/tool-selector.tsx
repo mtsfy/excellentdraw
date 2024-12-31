@@ -50,7 +50,7 @@ const ToolSelector = () => {
   }, [setTool]);
 
   return (
-    <div className="flex gap-2 mb-4 border-[1px] shadow-md p-[10px] rounded-xl xl:w-1/3 w-full justify-center fixed bg-white top-5">
+    <div className="flex gap-2 mb-4 border-[1px] shadow-md p-[10px] rounded-xl xl:w-1/3 w-full justify-center fixed bg-white top-5 z-50">
       {tools.map((tool, idx) => (
         <button
           key={idx}

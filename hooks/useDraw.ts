@@ -7,7 +7,7 @@ const DEFAULT_HEIGHT = 600;
 export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void) => {
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [startPoint, setStartPoint] = useState<Point | null>(null);
-  const { tool, strokeColor, strokeWidth } = useContext(DrawingContext);
+  const { tool, strokeColor, strokeWidth, zoom, setZoom } = useContext(DrawingContext);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const offscreenCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -18,10 +18,9 @@ export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void
     const canvas = canvasRef.current;
     if (canvas) {
       const rect = canvas.getBoundingClientRect();
-      const point = {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      };
+      const x = (e.clientX - rect.left) / zoom;
+      const y = (e.clientY - rect.top) / zoom;
+      const point = { x, y };
       setStartPoint(point);
       prevPoint.current = point;
     }
@@ -50,16 +49,19 @@ export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void
     if (!canvas || !offscreenCanvas) return;
 
     const computePoints = (e: MouseEvent) => {
+      const canvas = canvasRef.current;
+      if (!canvas) return null;
+
       const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      const scale = zoom;
+      const x = (e.clientX - rect.left) / scale;
+      const y = (e.clientY - rect.top) / scale;
       return { x, y };
     };
 
     const handleMouseMove = (e: MouseEvent) => {
       if (!isMouseDown) return;
       const currentPoint = computePoints(e);
-
       const ctx = canvas.getContext("2d");
       if (!ctx || !currentPoint) return;
 
@@ -104,9 +106,29 @@ export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void
     };
   }, [onDraw, tool, isMouseDown]);
 
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    canvas.style.transform = `scale(${zoom})`;
+    canvas.style.transformOrigin = "center";
+
+    const handleWheel = (e: WheelEvent) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        setZoom((prev) => Math.min(Math.max(0.1, prev * delta), 5));
+      }
+    };
+
+    canvas.addEventListener("wheel", handleWheel);
+    return () => {
+      canvas.removeEventListener("wheel", handleWheel);
+    };
+  }, [zoom, canvasRef]);
+
   const onErase = ({ prevPoint, currentPoint, ctx }: Draw) => {
     const { x: cx, y: cy } = currentPoint;
-    const lineWidth = 24;
+    const lineWidth = 24 / zoom + 5;
     const start = prevPoint ?? currentPoint;
 
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
@@ -153,7 +175,7 @@ export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.drawImage(offscreenCanvasRef.current, 0, 0);
 
-    const offset = 20; // Adjust this value to change offset distance
+    const offset = 20;
     const offsetStartPoint = {
       x: startPoint.x + offset,
       y: startPoint.y + offset,
@@ -161,7 +183,6 @@ export const useDraw = (onDraw: ({ currentPoint, prevPoint, ctx }: Draw) => void
 
     const radius = Math.sqrt(Math.pow(currentPoint.x - offsetStartPoint.x, 2) + Math.pow(currentPoint.y - offsetStartPoint.y, 2));
 
-    // Draw circle with offset
     ctx.beginPath();
     ctx.strokeStyle = strokeColor;
     ctx.lineWidth = strokeWidth / 2;

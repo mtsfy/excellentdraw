@@ -33,7 +33,7 @@ const Cursor = () => {
   };
   return (
     <motion.div
-      className="h-6 w-6 border-black border-[1px] bg-white rounded-full fixed top-0 left-0 pointer-events-none"
+      className="z-50 h-6 w-6 border-black border-[1px] bg-white rounded-full fixed top-0 left-0 pointer-events-none"
       variants={variants}
       animate={"default"}
       transition={{ duration: 0, ease: "linear" }}
