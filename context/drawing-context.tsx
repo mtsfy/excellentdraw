@@ -8,8 +8,6 @@ interface DrawingContextInterface {
   setStrokeColor: Dispatch<SetStateAction<string>>;
   strokeWidth: number;
   setStrokeWidth: Dispatch<SetStateAction<number>>;
-  strokeOpacity: number;
-  setStrokeOpacity: Dispatch<SetStateAction<number>>;
   currentPoint: Point;
   setCurrentPoint: Dispatch<SetStateAction<Point>>;
   zoom: number;
@@ -23,8 +21,6 @@ export const defaultState: DrawingContextInterface = {
   setStrokeColor: () => {},
   strokeWidth: 5,
   setStrokeWidth: () => {},
-  strokeOpacity: 100,
-  setStrokeOpacity: () => {},
   currentPoint: { x: 0, y: 0 },
   setCurrentPoint: () => {},
   zoom: 1,
@@ -37,7 +33,6 @@ export default function DrawingContextProvider({ children }: { children: React.R
   const [tool, setTool] = useState<DrawingTool>(defaultState.tool);
   const [strokeColor, setStrokeColor] = useState(defaultState.strokeColor);
   const [strokeWidth, setStrokeWidth] = useState(defaultState.strokeWidth);
-  const [strokeOpacity, setStrokeOpacity] = useState(defaultState.strokeOpacity);
   const [currentPoint, setCurrentPoint] = useState<Point>(defaultState.currentPoint);
   const [zoom, setZoom] = useState(1);
   return (
@@ -49,8 +44,6 @@ export default function DrawingContextProvider({ children }: { children: React.R
         setStrokeColor,
         strokeWidth,
         setStrokeWidth,
-        strokeOpacity,
-        setStrokeOpacity,
         currentPoint,
         setCurrentPoint,
         zoom,

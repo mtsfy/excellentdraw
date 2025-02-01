@@ -48,7 +48,7 @@ const CustomizationPanel = () => {
     },
   ];
   return (
-    <div className="border-[1px] shadow-md rounded-xl h-64 fixed top-10 left-10 z-50 bg-white flex flex-col justify-around">
+    <div className="border-[1px] shadow-md rounded-xl h-40 fixed top-10 left-10 z-50 bg-white flex flex-col justify-around">
       <div className="p-4 flex gap-2">
         {colors.map((color, idx) => (
           <button
@@ -69,9 +69,6 @@ const CustomizationPanel = () => {
             <div className="bg-neutral-700 rounded-2xl" style={{ height: size.size / 2, width: 20 }} />
           </button>
         ))}
-      </div>
-      <div className="p-4 flex items-center">
-        <input type="range" min="0" max="100" defaultValue="100" className="w-full" />
       </div>
     </div>
   );
